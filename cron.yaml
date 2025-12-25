@@ -1,0 +1,15 @@
+services:  
+ cronicle:
+    build:
+      context: ./cron/cronicle
+    ports:
+      - "3012:3012"   
+      - "3014:3014"              
+    volumes:
+      - jrgdata:/var/jrg
+      - cronicle:/opt/cronicle
+      - ./cron/cronicle/config.json:/opt/cronicle/conf/config.json
+
+volumes:
+  jrgdata:
+  cronicle:     

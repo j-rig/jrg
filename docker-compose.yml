@@ -3,106 +3,51 @@ services:
     image: postgres:16       
     restart: always
     environment:
-      POSTGRES_USER: pguser   
-      POSTGRES_PASSWORD: pgpass
-      POSTGRES_DB: pgdb
+      POSTGRES_USER: ${ADMIN_USER} 
+      POSTGRES_PASSWORD: ${ADMIN_PASS}
     ports:
       - "5432:5432"
     volumes:
       - jrgdata:/var/jrg
       - pgdata:/var/lib/postgresql/data
-      - ./postgres/jrg.sql:/docker-entrypoint-initdb.d/jrg.sql
+      - ./db/postgres/jrg.sql:/docker-entrypoint-initdb.d/jrg.sql
 
   pgadmin:
     image: dpage/pgadmin4:8
-    container_name: pgadmin
+    # container_name: pgadmin
     restart: always
     depends_on:
       - postgres
     environment:
-      PGADMIN_DEFAULT_EMAIL: jrg@jrg.com
-      PGADMIN_DEFAULT_PASSWORD: pgapass
+      PGADMIN_DEFAULT_EMAIL: ${ADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${ADMIN_PASS} 
       PGADMIN_DISABLE_POSTFIX: 1
+      PGADMIN_LISTEN_PORT: 8081
     ports:
-      - "8080:80"
+      - "8081:8081"
     volumes:
       - jrgdata:/var/jrg
       - pgadmin-data:/var/lib/pgadmin
-      - ./pgadmin4/servers.json:/pgadmin4/servers.json
-      - ./pgadmin4/pgpass.txt:/pgpass
+      - ./db/pgadmin4/servers.json:/pgadmin4/servers.json
+      - ./db/pgadmin4/pgpass.txt:/pgpass
 
-  node-red:
-    image: nodered/node-red:4.1
-    container_name: node-red
-    restart: always
-    depends_on:
-      - postgres    
-    ports:
-      - "1880:1880"
-    volumes:
-      - jrgdata:/var/jrg    
-      - node-red-data:/data      
-
-  rabbitmq:
-    image: rabbitmq:3-management
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    environment:
-      RABBITMQ_DEFAULT_USER: rmquser
-      RABBITMQ_DEFAULT_PASS: rmqpass
-    volumes:
-      - jrgdata:/var/jrg   
-
-  flower:
-    image: mher/flower
-    command: celery --broker=amqp://rmquser:rmqpass@rabbitmq:5672// flower 
-    ports:
-      - "5555:5555"
-    depends_on:
-      - rabbitmq
-
-  celery_worker_1:
+  nicegui:
     build:
-      context: ./celery
-    environment:
-      - CELERY_BROKER_URL=amqp://rmquser:rmqpass@rabbitmq:5672// 
+      context: ./nicegui
+    ports:
+      - "8080:8080"
     depends_on:
-      - rabbitmq
+      - postgres
     volumes:
       - jrgdata:/var/jrg 
-
-
-   #todo luigi
-
-   #todo yacron   
-
-   #todo superset
-
-  # celery_worker_2:
-  #   build:
-  #     context: ./celery
-  #   environment:
-  #     - CELERY_BROKER_URL=amqp://rmquser:rmqpass@rabbitmq:5672// 
-  #   depends_on:
-  #     - rabbitmq
-  #   volumes:
-  #     - jrgdata:/var/jrg   
-
-  # cronicle:
-  #   build:
-  #     context: ./cronicle
-  #   depends_on:
-  #     - postgres
-  #     - rabbitmq
-  #   ports:
-  #       - "3012:3012"      
-  #   volumes:
-  #     - jrgdata:/var/jrg           
-
+      
 volumes:
   jrgdata:
   pgdata:
   pgadmin-data:
-  node-red-data:
-  nifi_data:
+
+include:
+ - path: queue.yaml
+ - path: cron.yaml
+ - path: flow.yaml
+#  - path: erp.yaml 

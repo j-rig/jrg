@@ -55,3 +55,14 @@ clips
 luigid
 https://luigi.readthedocs.io/en/stable/execution_model.html
 https://github.com/gjcarneiro/yacron
+
+
+https://github.com/open-webui/open-webui
+
+https://ollama.com/blog/ollama-is-now-available-as-an-official-docker-image
+
+https://nicegui.io/#features
+https://nicegui.io/examples
+
+
+https://hay-kot.github.io/homebox/

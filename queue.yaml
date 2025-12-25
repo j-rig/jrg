@@ -1,0 +1,22 @@
+services:  
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RW_USER} 
+      RABBITMQ_DEFAULT_PASS: ${RW_PASS}
+    volumes:
+      - jrgdata:/var/jrg   
+
+  celery_worker:
+    build:
+      context: ./queue/celery
+    environment:
+      - CELERY_BROKER_URL=amqp://${RW_USER}:${RW_PASS}@rabbitmq:5672// 
+    depends_on:
+      - rabbitmq
+    volumes:
+      - jrgdata:/var/jrg   
+

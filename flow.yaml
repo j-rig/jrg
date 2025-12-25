@@ -1,0 +1,16 @@
+services:  
+  node-red:
+    image: nodered/node-red:4.1
+    container_name: node-red
+    restart: always
+    depends_on:
+      - postgres    
+    ports:
+      - "1880:1880"
+    volumes:
+      - jrgdata:/var/jrg    
+      - node-red:/data    
+
+volumes:
+  jrgdata:
+  node-red:

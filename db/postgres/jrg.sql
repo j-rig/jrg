@@ -2,13 +2,13 @@
 CREATE DATABASE jrg;
 
 -- Create a read-write user with a password
-CREATE USER rwuser WITH PASSWORD 'rwpassword';
+CREATE USER rwuser WITH PASSWORD 'rwpass';
 
 -- Grant all privileges on the new database to the read-write user
 GRANT ALL PRIVILEGES ON DATABASE jrg TO rwuser;
 
 -- Create a read-only user with a password
-CREATE USER rouser WITH PASSWORD 'ropassword';
+CREATE USER rouser WITH PASSWORD 'ropass';
 
 -- Grant the read-only user permission to connect to the database
 GRANT CONNECT ON DATABASE jrg TO rouser;
